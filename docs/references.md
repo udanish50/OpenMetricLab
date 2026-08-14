@@ -1,10 +1,13 @@
-# Reference implementations and definitions
+# Metric definitions and implementation provenance
 
-OpenMetricLab intentionally follows established metric conventions.
+OpenMetricLab v0.2.0 does **not** call scikit-learn, SciPy, scikit-image, MONAI, OpenCV, or another metric package to calculate scores. The formulas are implemented in OpenMetricLab itself.
 
-- scikit-learn model evaluation: regression and classification metrics.
-- scikit-image metrics: SSIM, PSNR, NMI, Hausdorff-style image metrics.
-- MONAI metrics: Dice and Hausdorff/surface-distance conventions used in medical imaging.
-- OpenCV: Enhanced Correlation Coefficient / normalized correlation concepts for image alignment.
+The implementation follows standard definitions for:
+- regression error and coefficient-of-determination families;
+- confusion-matrix precision/recall/F1, balanced accuracy, Cohen's κ, multiclass MCC;
+- ROC-AUC, precision-recall average precision, log loss and Brier scores;
+- Dice/Jaccard overlap and symmetric surface-distance summaries;
+- SSIM, PSNR, normalized cross-correlation and normalized mutual information;
+- target registration error (TRE).
 
-When a browser implementation is simplified for responsiveness, the interface labels that limitation rather than presenting it as bit-for-bit equivalent to every library implementation. In particular, browser segmentation surface distances may deterministically sample very large boundaries; the Python implementation uses SciPy distance transforms.
+Reference libraries may be useful for independent verification during research, but they are intentionally not runtime dependencies or implementation backends.

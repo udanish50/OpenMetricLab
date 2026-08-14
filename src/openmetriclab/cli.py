@@ -1,21 +1,54 @@
 from __future__ import annotations
-import argparse,csv,json
-from pathlib import Path
-from .regression import evaluate_regression
-from .classification import evaluate_classification
 
-def main():
-    ap=argparse.ArgumentParser(prog='openmetriclab',description='Truth-vs-prediction evaluation for regression and classification CSV files.')
-    ap.add_argument('csv'); ap.add_argument('--task',choices=['regression','classification'],required=True)
-    ap.add_argument('--actual',required=True); ap.add_argument('--predicted',required=True)
-    ap.add_argument('--prob-prefix',default='prob_'); args=ap.parse_args()
-    with Path(args.csv).open(newline='',encoding='utf-8') as f: rows=list(csv.DictReader(f))
-    y=[r[args.actual] for r in rows]; p=[r[args.predicted] for r in rows]
-    if args.task=='regression': result=evaluate_regression([float(x) for x in y],[float(x) for x in p])
+import argparse
+import csv
+import json
+from pathlib import Path
+
+from .classification import evaluate_classification
+from .regression import evaluate_regression
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        prog="openmetriclab",
+        description="Truth-vs-prediction evaluation for regression and classification CSV files.",
+    )
+    parser.add_argument("csv")
+    parser.add_argument("--task", choices=["regression", "classification"], required=True)
+    parser.add_argument("--actual", required=True)
+    parser.add_argument("--predicted", required=True)
+    parser.add_argument("--prob-prefix", default="prob_")
+    args = parser.parse_args()
+
+    with Path(args.csv).open(newline="", encoding="utf-8") as handle:
+        rows = list(csv.DictReader(handle))
+
+    y_true = [row[args.actual] for row in rows]
+    y_pred = [row[args.predicted] for row in rows]
+    if args.task == "regression":
+        result = evaluate_regression(
+            [float(value) for value in y_true],
+            [float(value) for value in y_pred],
+        )
     else:
-        prob_cols=[c for c in rows[0] if c.startswith(args.prob_prefix)] if rows else []
-        probs=[[float(r[c]) for c in prob_cols] for r in rows] if prob_cols else None
-        classes=[c[len(args.prob_prefix):] for c in prob_cols] if prob_cols else None
-        result=evaluate_classification(y,p,probs,classes)
-    print(json.dumps(result,indent=2,allow_nan=False))
-if __name__=='__main__': main()
+        probability_columns = [
+            column for column in rows[0] if column.startswith(args.prob_prefix)
+        ] if rows else []
+        probabilities = (
+            [[float(row[column]) for column in probability_columns] for row in rows]
+            if probability_columns
+            else None
+        )
+        classes = (
+            [column[len(args.prob_prefix) :] for column in probability_columns]
+            if probability_columns
+            else None
+        )
+        result = evaluate_classification(y_true, y_pred, probabilities, classes)
+
+    print(json.dumps(result, indent=2, allow_nan=False))
+
+
+if __name__ == "__main__":
+    main()

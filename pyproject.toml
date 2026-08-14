@@ -3,13 +3,13 @@ requires=["setuptools>=77","wheel"]
 build-backend="setuptools.build_meta"
 [project]
 name="openmetriclab"
-version="0.1.0"
+version="0.2.0"
 description="Open, local-first truth-vs-prediction evaluation for regression, classification, segmentation, and image registration."
 readme="README.md"
 requires-python=">=3.10"
 license={text="MIT"}
 authors=[{name="Muhammad Umair Danish"}]
-dependencies=["numpy>=1.26","scipy>=1.10","scikit-learn>=1.4","scikit-image>=0.22"]
+dependencies=["numpy>=1.26"]
 [project.optional-dependencies]
 dev=["pytest>=8","ruff>=0.9"]
 [project.scripts]

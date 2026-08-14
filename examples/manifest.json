@@ -1,13 +1,13 @@
 {
   "name": "OpenMetricLab example suite",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "generated": "2026-08-14",
   "examples": [
     {
       "id": "regression_diabetes",
       "task": "regression",
-      "name": "Diabetes \u2014 held-out regression",
-      "source": "scikit-learn load_diabetes",
+      "name": "Diabetes — held-out regression",
+      "source": "Public Diabetes regression dataset — bundled CSV fixture",
       "file": "examples/data/regression_diabetes.csv",
       "description": "Held-out Diabetes targets with Ridge and Random Forest predictions for side-by-side regression evaluation.",
       "files": [
@@ -21,8 +21,8 @@
     {
       "id": "classification_iris",
       "task": "classification",
-      "name": "Iris \u2014 multiclass classification",
-      "source": "scikit-learn load_iris",
+      "name": "Iris — multiclass classification",
+      "source": "Public Iris dataset — bundled CSV fixture",
       "file": "examples/data/classification_iris.csv",
       "description": "Held-out multiclass/binary classification labels with calibrated-style probability columns from logistic regression.",
       "files": [
@@ -36,8 +36,8 @@
     {
       "id": "classification_wine",
       "task": "classification",
-      "name": "Wine \u2014 multiclass classification",
-      "source": "scikit-learn load_wine",
+      "name": "Wine — multiclass classification",
+      "source": "Public Wine recognition dataset — bundled CSV fixture",
       "file": "examples/data/classification_wine.csv",
       "description": "Held-out multiclass/binary classification labels with calibrated-style probability columns from logistic regression.",
       "files": [
@@ -51,8 +51,8 @@
     {
       "id": "classification_breast_cancer",
       "task": "classification",
-      "name": "Breast Cancer Wisconsin \u2014 binary classification",
-      "source": "scikit-learn load_breast_cancer",
+      "name": "Breast Cancer Wisconsin — binary classification",
+      "source": "Public Wisconsin Diagnostic Breast Cancer dataset — bundled CSV fixture",
       "file": "examples/data/classification_breast_cancer.csv",
       "description": "Held-out multiclass/binary classification labels with calibrated-style probability columns from logistic regression.",
       "files": [
@@ -66,8 +66,8 @@
     {
       "id": "classification_digits",
       "task": "classification",
-      "name": "Digits \u2014 10-class classification",
-      "source": "scikit-learn load_digits",
+      "name": "Digits — 10-class classification",
+      "source": "Public handwritten digits dataset — bundled CSV fixture",
       "file": "examples/data/classification_digits.csv",
       "description": "Held-out multiclass/binary classification labels with calibrated-style probability columns from logistic regression.",
       "files": [
@@ -81,11 +81,11 @@
     {
       "id": "segmentation_horse",
       "task": "segmentation",
-      "name": "Horse silhouette \u2014 binary segmentation",
-      "source": "scikit-image data.horse",
+      "name": "Horse silhouette — binary segmentation",
+      "source": "Public horse-silhouette mask — bundled image fixture",
       "actual": "examples/images/segmentation_horse_actual.png",
       "prediction": "examples/images/segmentation_horse_prediction.png",
-      "description": "Public scikit-image horse silhouette used as the reference mask; the prediction is a deterministic shifted/eroded perturbation for metric demonstration.",
+      "description": "Public horse-silhouette reference mask with a deterministic shifted/eroded prediction for metric demonstration.",
       "files": [
         {
           "path": "examples/images/segmentation_horse_actual.png",
@@ -102,7 +102,7 @@
     {
       "id": "segmentation_multiclass_fixture",
       "task": "segmentation",
-      "name": "Three-label geometry \u2014 multiclass mask",
+      "name": "Three-label geometry — multiclass mask",
       "source": "deterministic geometry fixture",
       "actual": "examples/images/segmentation_multiclass_actual.png",
       "prediction": "examples/images/segmentation_multiclass_prediction.png",
@@ -123,13 +123,13 @@
     {
       "id": "registration_shepp_logan",
       "task": "registration",
-      "name": "Shepp\u2013Logan phantom \u2014 registration",
-      "source": "scikit-image shepp_logan_phantom",
+      "name": "Shepp–Logan phantom — registration",
+      "source": "Standard Shepp–Logan phantom — bundled image fixture",
       "fixed": "examples/images/registration_shepp_fixed.png",
       "moving": "examples/images/registration_shepp_moving.png",
       "registered": "examples/images/registration_shepp_registered.png",
       "landmarks": "examples/data/registration_shepp_landmarks.csv",
-      "description": "Canonical Shepp\u2013Logan phantom with deterministic misregistration and residual registration error, plus landmark pairs for TRE.",
+      "description": "Canonical Shepp–Logan phantom with deterministic misregistration and residual registration error, plus landmark pairs for TRE.",
       "files": [
         {
           "path": "examples/images/registration_shepp_fixed.png",
@@ -155,8 +155,9 @@
     }
   ],
   "notes": [
-    "Regression/classification use public scikit-learn datasets with deterministic held-out predictions.",
-    "Horse and Shepp\u2013Logan examples come from scikit-image sample data/functions.",
+    "Regression/classification examples are bundled static CSV fixtures derived from public/open datasets.",
+    "Image examples are bundled public/standard fixtures plus deterministic perturbations.",
+    "Metric computation is performed by OpenMetricLab code; example data do not provide metric implementations.",
     "Perturbed predictions are deterministic demonstration artifacts and are not claims about published model performance."
   ]
 }

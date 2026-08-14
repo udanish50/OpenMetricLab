@@ -2,6 +2,7 @@
 'use strict';
 const EPS=1e-12;
 const OML={};
+OML.engine={name:'OpenMetricLab native metric engine',version:'0.2.0',externalMetricLibraries:[]};
 
 OML.parseCSV=function(text){
   const rows=[]; let row=[], field='', q=false;
@@ -38,8 +39,9 @@ OML.regressionMetrics=function(y0,p0){
 
 function unique(a){return [...new Set(a.map(String))];}
 function cmatrix(y,p,classes){const k=classes.length,idx=new Map(classes.map((c,i)=>[c,i])),m=Array.from({length:k},()=>Array(k).fill(0));for(let i=0;i<y.length;i++){const a=idx.get(String(y[i])),b=idx.get(String(p[i]));if(a!=null&&b!=null)m[a][b]++;}return m;}
-function rocBinary(y,score,pos){const pairs=y.map((v,i)=>({y:String(v)===String(pos)?1:0,s:+score[i]})).filter(o=>Number.isFinite(o.s)).sort((a,b)=>b.s-a.s);const P=pairs.reduce((s,o)=>s+o.y,0),N=pairs.length-P;if(!P||!N)return null;let tp=0,fp=0,prev=Infinity;const pts=[[0,0,Infinity]];for(const o of pairs){if(o.s!==prev){pts.push([fp/N,tp/P,prev]);prev=o.s;}if(o.y)tp++;else fp++;}pts.push([fp/N,tp/P,prev],[1,1,-Infinity]);let auc=0;for(let i=1;i<pts.length;i++)auc+=(pts[i][0]-pts[i-1][0])*(pts[i][1]+pts[i-1][1])/2;return {points:pts.map(x=>({fpr:x[0],tpr:x[1],threshold:x[2]})),auc};}
-function prBinary(y,score,pos){const pairs=y.map((v,i)=>({y:String(v)===String(pos)?1:0,s:+score[i]})).filter(o=>Number.isFinite(o.s)).sort((a,b)=>b.s-a.s);const P=pairs.reduce((s,o)=>s+o.y,0);if(!P)return null;let tp=0,fp=0,ap=0,lastRecall=0;const pts=[{recall:0,precision:1,threshold:Infinity}];for(const o of pairs){if(o.y)tp++;else fp++;const recall=tp/P,precision=tp/(tp+fp);if(o.y){ap+=(recall-lastRecall)*precision;lastRecall=recall;}pts.push({recall,precision,threshold:o.s});}return {points:pts,ap};}
+function binaryCurves(y,score,pos){const pairs=y.map((v,i)=>({y:String(v)===String(pos)?1:0,s:+score[i]})).filter(o=>Number.isFinite(o.s)).sort((a,b)=>b.s-a.s);const P=pairs.reduce((s,o)=>s+o.y,0),N=pairs.length-P;if(!P||!N)return null;let tp=0,fp=0,i=0;const roc=[{fpr:0,tpr:0,threshold:Infinity}],pr=[{recall:0,precision:1,threshold:Infinity}];while(i<pairs.length){const thr=pairs[i].s;let j=i;while(j<pairs.length&&pairs[j].s===thr){if(pairs[j].y)tp++;else fp++;j++;}const tpr=tp/P,fpr=fp/N,precision=tp/(tp+fp);roc.push({fpr,tpr,threshold:thr});pr.push({recall:tpr,precision,threshold:thr});i=j;}let auc=0;for(let k=1;k<roc.length;k++)auc+=(roc[k].fpr-roc[k-1].fpr)*(roc[k].tpr+roc[k-1].tpr)/2;let ap=0,lastRecall=0;for(let k=1;k<pr.length;k++){const dr=pr[k].recall-lastRecall;if(dr>0)ap+=dr*pr[k].precision;lastRecall=pr[k].recall;}return {roc:{points:roc,auc},pr:{points:pr,ap}};}
+function rocBinary(y,score,pos){const c=binaryCurves(y,score,pos);return c?c.roc:null;}
+function prBinary(y,score,pos){const c=binaryCurves(y,score,pos);return c?c.pr:null;}
 function mccMulticlass(m){const k=m.length;let c=0,s=0;const t=Array(k).fill(0),p=Array(k).fill(0);for(let i=0;i<k;i++)for(let j=0;j<k;j++){const v=m[i][j];s+=v;t[i]+=v;p[j]+=v;if(i===j)c+=v;}let tp=0,t2=0,p2=0;for(let i=0;i<k;i++){tp+=t[i]*p[i];t2+=t[i]*t[i];p2+=p[i]*p[i];}const num=c*s-tp,den=Math.sqrt((s*s-p2)*(s*s-t2));return den>0?num/den:0;}
 OML.classificationMetrics=function(y0,p0,probabilities=null,probClasses=null){
   const n=Math.min(y0.length,p0.length),y=y0.slice(0,n).map(String),p=p0.slice(0,n).map(String),classes=unique([...y,...p,...((probClasses||[]).map(String))]);if(n<2)throw new Error('At least two classification rows are required.');
@@ -48,10 +50,11 @@ OML.classificationMetrics=function(y0,p0,probabilities=null,probClasses=null){
   const rowTotals=m.map(r=>r.reduce((a,b)=>a+b,0)),colTotals=classes.map((_,j)=>m.reduce((s,r)=>s+r[j],0));const pe=rowTotals.reduce((s,v,i)=>s+v*colTotals[i],0)/(n*n),kappa=Math.abs(1-pe)>EPS?(acc-pe)/(1-pe):0;
   const out={n,classes,accuracy:acc,balancedAccuracy:balanced,f1Macro:macroF1,f1Weighted:weightedF1,mcc:mccMulticlass(m),kappa,confusion:m,perClass:per};
   if(probabilities && probabilities.length===n){
-    const pc=(probClasses||classes).map(String);const mat=probabilities.map(r=>r.map(Number));const eps=1e-15;let ll=0,brier=0;for(let i=0;i<n;i++){const s=mat[i].reduce((a,b)=>a+(Number.isFinite(b)?Math.max(0,b):0),0)||1;const norm=mat[i].map(v=>Math.max(eps,Math.min(1-eps,(Number.isFinite(v)?Math.max(0,v):0)/s)));const yi=pc.indexOf(y[i]);if(yi>=0){ll-=Math.log(norm[yi]);for(let j=0;j<pc.length;j++)brier+=(norm[j]-(j===yi?1:0))**2;}}
-    out.logLoss=ll/n;out.brier=brier/n;
-    if(classes.length===2){const pos=classes[1],j=pc.indexOf(pos);if(j>=0){const scores=mat.map(r=>+r[j]);out.roc=rocBinary(y,scores,pos);out.pr=prBinary(y,scores,pos);out.rocAuc=out.roc?.auc??null;out.averagePrecision=out.pr?.ap??null;out.positiveClass=pos;out.scores=scores;}}
-    else {const aucs=[],aps=[];for(const c of classes){const j=pc.indexOf(c);if(j<0)continue;const scores=mat.map(r=>+r[j]),roc=rocBinary(y,scores,c),pr=prBinary(y,scores,c);if(roc)aucs.push(roc.auc);if(pr)aps.push(pr.ap);}out.rocAucMacro=aucs.length?mean(aucs):null;out.averagePrecisionMacro=aps.length?mean(aps):null;}
+    const pc=(probClasses||classes).map(String),eps=1e-15,normMat=[];let normalized=false,ll=0,brier=0;
+    for(let i=0;i<n;i++){const raw=probabilities[i].map(Number);if(raw.length!==pc.length||raw.some(v=>!Number.isFinite(v)||v<0))throw new Error('Probability rows must contain one finite non-negative value per class.');const total=raw.reduce((a,b)=>a+b,0);if(!(total>0))throw new Error('Every probability row must have positive mass.');if(Math.abs(total-1)>1e-9)normalized=true;const norm=raw.map(v=>v/total);normMat.push(norm);const yi=pc.indexOf(y[i]);if(yi>=0){ll-=Math.log(Math.max(eps,norm[yi]));for(let j=0;j<pc.length;j++)brier+=(norm[j]-(j===yi?1:0))**2;}}
+    out.logLoss=ll/n;out.brier=brier/n;out.probabilitiesNormalized=normalized;
+    if(classes.length===2){const pos=classes[1],j=pc.indexOf(pos);if(j>=0){const scores=normMat.map(r=>r[j]);out.roc=rocBinary(y,scores,pos);out.pr=prBinary(y,scores,pos);out.rocAuc=out.roc?.auc??null;out.averagePrecision=out.pr?.ap??null;out.positiveClass=pos;out.scores=scores;out.brier=mean(scores.map((v,i)=>(v-(String(y[i])===String(pos)?1:0))**2));}}
+    else {const aucs=[],aps=[];for(const c of classes){const j=pc.indexOf(c);if(j<0)continue;const scores=normMat.map(r=>r[j]),roc=rocBinary(y,scores,c),pr=prBinary(y,scores,c);if(roc)aucs.push(roc.auc);if(pr)aps.push(pr.ap);}out.rocAucMacro=aucs.length?mean(aucs):null;out.averagePrecisionMacro=aps.length?mean(aps):null;}
   }
   return out;
 };

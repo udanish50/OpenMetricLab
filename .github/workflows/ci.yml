@@ -11,3 +11,6 @@ jobs:
       - run: pip install -e '.[dev]'
       - run: pytest -q
       - run: ruff check src tests
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node tests/test_browser_engine.js
