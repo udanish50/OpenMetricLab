@@ -1,0 +1,162 @@
+{
+  "name": "OpenMetricLab example suite",
+  "version": "0.1.0",
+  "generated": "2026-08-14",
+  "examples": [
+    {
+      "id": "regression_diabetes",
+      "task": "regression",
+      "name": "Diabetes \u2014 held-out regression",
+      "source": "scikit-learn load_diabetes",
+      "file": "examples/data/regression_diabetes.csv",
+      "description": "Held-out Diabetes targets with Ridge and Random Forest predictions for side-by-side regression evaluation.",
+      "files": [
+        {
+          "path": "examples/data/regression_diabetes.csv",
+          "sha256": "cf5f224e89b289a9c69de2feb00dae71a4cfa16706c136efce43345befcf5120",
+          "bytes": 7394
+        }
+      ]
+    },
+    {
+      "id": "classification_iris",
+      "task": "classification",
+      "name": "Iris \u2014 multiclass classification",
+      "source": "scikit-learn load_iris",
+      "file": "examples/data/classification_iris.csv",
+      "description": "Held-out multiclass/binary classification labels with calibrated-style probability columns from logistic regression.",
+      "files": [
+        {
+          "path": "examples/data/classification_iris.csv",
+          "sha256": "3d4aae0062ec7608fc1cc33cffca46251d2a0bdf3eb643faa02ba9edd9ee49de",
+          "bytes": 3681
+        }
+      ]
+    },
+    {
+      "id": "classification_wine",
+      "task": "classification",
+      "name": "Wine \u2014 multiclass classification",
+      "source": "scikit-learn load_wine",
+      "file": "examples/data/classification_wine.csv",
+      "description": "Held-out multiclass/binary classification labels with calibrated-style probability columns from logistic regression.",
+      "files": [
+        {
+          "path": "examples/data/classification_wine.csv",
+          "sha256": "cce34c4d5f95bdd151030732809f5b7f7176f15277fb81a2c0edabc36d79268f",
+          "bytes": 4441
+        }
+      ]
+    },
+    {
+      "id": "classification_breast_cancer",
+      "task": "classification",
+      "name": "Breast Cancer Wisconsin \u2014 binary classification",
+      "source": "scikit-learn load_breast_cancer",
+      "file": "examples/data/classification_breast_cancer.csv",
+      "description": "Held-out multiclass/binary classification labels with calibrated-style probability columns from logistic regression.",
+      "files": [
+        {
+          "path": "examples/data/classification_breast_cancer.csv",
+          "sha256": "a82091329990643dce723df46a783670b5966bd2ea4c694ee0ed9a2c7595ec47",
+          "bytes": 9836
+        }
+      ]
+    },
+    {
+      "id": "classification_digits",
+      "task": "classification",
+      "name": "Digits \u2014 10-class classification",
+      "source": "scikit-learn load_digits",
+      "file": "examples/data/classification_digits.csv",
+      "description": "Held-out multiclass/binary classification labels with calibrated-style probability columns from logistic regression.",
+      "files": [
+        {
+          "path": "examples/data/classification_digits.csv",
+          "sha256": "4fa1166a1e44763bd18ad63802d7dd00429b8dd3f858cf8ef22ab8dd8b42b625",
+          "bytes": 143023
+        }
+      ]
+    },
+    {
+      "id": "segmentation_horse",
+      "task": "segmentation",
+      "name": "Horse silhouette \u2014 binary segmentation",
+      "source": "scikit-image data.horse",
+      "actual": "examples/images/segmentation_horse_actual.png",
+      "prediction": "examples/images/segmentation_horse_prediction.png",
+      "description": "Public scikit-image horse silhouette used as the reference mask; the prediction is a deterministic shifted/eroded perturbation for metric demonstration.",
+      "files": [
+        {
+          "path": "examples/images/segmentation_horse_actual.png",
+          "sha256": "33bd81b39e7e4eeef3bd26a3e19a83974ae8854df2d849e778b5465cef7fb731",
+          "bytes": 1787
+        },
+        {
+          "path": "examples/images/segmentation_horse_prediction.png",
+          "sha256": "dd5e088ec79a6be786460571e7d15401bf50d4d51d100b829c16a5581c201b09",
+          "bytes": 1768
+        }
+      ]
+    },
+    {
+      "id": "segmentation_multiclass_fixture",
+      "task": "segmentation",
+      "name": "Three-label geometry \u2014 multiclass mask",
+      "source": "deterministic geometry fixture",
+      "actual": "examples/images/segmentation_multiclass_actual.png",
+      "prediction": "examples/images/segmentation_multiclass_prediction.png",
+      "description": "Deterministic three-label fixture for testing per-class and macro segmentation metrics; not presented as a real-world dataset.",
+      "files": [
+        {
+          "path": "examples/images/segmentation_multiclass_actual.png",
+          "sha256": "24d64316d80ab0dd5a77f487ff23672f2c849eb8021d240a01f7c680c75e404a",
+          "bytes": 540
+        },
+        {
+          "path": "examples/images/segmentation_multiclass_prediction.png",
+          "sha256": "d6a296725f48748c7c3ceb026c48b770f2b1a464cf3b92e032798f46c676c0c7",
+          "bytes": 543
+        }
+      ]
+    },
+    {
+      "id": "registration_shepp_logan",
+      "task": "registration",
+      "name": "Shepp\u2013Logan phantom \u2014 registration",
+      "source": "scikit-image shepp_logan_phantom",
+      "fixed": "examples/images/registration_shepp_fixed.png",
+      "moving": "examples/images/registration_shepp_moving.png",
+      "registered": "examples/images/registration_shepp_registered.png",
+      "landmarks": "examples/data/registration_shepp_landmarks.csv",
+      "description": "Canonical Shepp\u2013Logan phantom with deterministic misregistration and residual registration error, plus landmark pairs for TRE.",
+      "files": [
+        {
+          "path": "examples/images/registration_shepp_fixed.png",
+          "sha256": "f5635a9d72bbfbb998fe3af6493fff9969fad05281b5a2841406b5b77681b38e",
+          "bytes": 4950
+        },
+        {
+          "path": "examples/images/registration_shepp_moving.png",
+          "sha256": "dfa0b5323660b52aa925264942713da431ec004d4e2035a4f3dee29a991ab07c",
+          "bytes": 7202
+        },
+        {
+          "path": "examples/images/registration_shepp_registered.png",
+          "sha256": "6786f464c61af611402324654c8b293988ec92ee377296841c64a3cd55799f56",
+          "bytes": 6929
+        },
+        {
+          "path": "examples/data/registration_shepp_landmarks.csv",
+          "sha256": "08862d37e5360966f4d67a856e80ecb7d9b02738e1959ae0e4e3d84ca035479e",
+          "bytes": 634
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Regression/classification use public scikit-learn datasets with deterministic held-out predictions.",
+    "Horse and Shepp\u2013Logan examples come from scikit-image sample data/functions.",
+    "Perturbed predictions are deterministic demonstration artifacts and are not claims about published model performance."
+  ]
+}
